@@ -256,6 +256,15 @@ typedef int(^FMDBExecuteStatementsCallbackBlock)(NSDictionary *resultsDictionary
 
 - (BOOL)close;
 
+/** Verify that FMDB can access an encrypted DB given its path and encryption key.
+    This can be used to verify that FMDB has been configured and built in a way
+    that's compatible with SQLCipher.
+ 
+ @return `YES` if success, `NO` on error.
+ */
+
++ (BOOL)verifyDB:(NSString *)databasePath encryptionKey:(NSString *)encryptionKey;
+
 /** Test to see if we have a good connection to the database.
  
  This will confirm whether:

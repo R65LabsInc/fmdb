@@ -441,6 +441,35 @@ static int FMDBDatabaseBusyHandler(void *f, int count) {
 
 #pragma mark State of database
 
++ (BOOL)verifyDB:(NSString *)databasePath encryptionKey:(NSString *)encryptionKey
+{
+    sqlite3 *encryptedDB;
+    
+    bool sqlcipher_valid = NO;
+    
+    if (sqlite3_open([databasePath UTF8String], &encryptedDB) == SQLITE_OK) {
+        const char* key = [encryptionKey UTF8String];
+        sqlite3_key(encryptedDB, key, (int)strlen(key));
+        if (sqlite3_exec(encryptedDB, (const char*) "SELECT count(*) FROM sqlite_master;", NULL, NULL, NULL) == SQLITE_OK) {
+            sqlite3_stmt *stmt = nil;
+            if(sqlite3_prepare_v2(encryptedDB, "PRAGMA cipher_version;", -1, &stmt, NULL) == SQLITE_OK) {
+                if(sqlite3_step(stmt)== SQLITE_ROW) {
+                    const unsigned char *ver = sqlite3_column_text(stmt, 0);
+                    if(ver != NULL) {
+                        sqlcipher_valid = YES;
+                        
+                        // password is correct (or database initialize), and verified to be using sqlcipher
+                        
+                    }
+                }
+                sqlite3_finalize(stmt);
+            }
+        }
+        sqlite3_close(encryptedDB);
+    }
+    return sqlcipher_valid;
+}
+
 - (BOOL)goodConnection {
     
     if (!_db) {
