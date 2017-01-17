@@ -35,6 +35,7 @@ static const void * const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey
 @synthesize path = _path;
 @synthesize openFlags = _openFlags;
 @synthesize vfsName = _vfsName;
+@synthesize encryptionKey = _encryptionKey;
 
 + (instancetype)databaseQueueWithPath:(NSString*)aPath {
     
@@ -72,10 +73,15 @@ static const void * const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey
 #else
         BOOL success = [_db open];
 #endif
+        
         if (!success) {
             NSLog(@"Could not create database queue for path %@", aPath);
             FMDBRelease(self);
             return 0x00;
+        }
+        
+        if (_encryptionKey) {
+            [_db setKey:_encryptionKey];
         }
         
         _path = FMDBReturnRetained(aPath);
@@ -87,6 +93,12 @@ static const void * const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey
     }
     
     return self;
+}
+
+
+- (instancetype)initWithPath:(NSString*)aPath encryptionKey:(NSString*)encryptionKey {
+    _encryptionKey = encryptionKey;
+    return [self initWithPath:aPath];
 }
 
 - (instancetype)initWithPath:(NSString*)aPath flags:(int)openFlags {
@@ -147,6 +159,10 @@ static const void * const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey
             FMDBRelease(_db);
             _db  = 0x00;
             return 0x00;
+        }
+        
+        if (_encryptionKey) {
+            [_db setKey:_encryptionKey];
         }
     }
     

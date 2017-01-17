@@ -66,6 +66,7 @@
     FMDatabase          *_db;
     int                 _openFlags;
     NSString            *_vfsName;
+    NSString            *_encryptionKey;
 }
 
 /** Path of database */
@@ -79,6 +80,10 @@
 /**  Custom virtual file system name */
 
 @property (atomic, copy) NSString *vfsName;
+
+/** Encryption key for SQLCipher */
+
+@property (atomic, copy) NSString *encryptionKey;
 
 ///----------------------------------------------------
 /// @name Initialization, opening, and closing of queue
@@ -131,6 +136,16 @@
  */
 
 - (instancetype)initWithPath:(NSString*)aPath flags:(int)openFlags vfs:(NSString *)vfsName;
+
+/** Create queue using path and SQLCipher encryption key.
+ 
+ @param aPath The file path of the database.
+ @param encryptionKey The key used by SQLCipher to encrypt the database.
+ 
+ @return The `FMDatabaseQueue` object. `nil` on error.
+ */
+
+- (instancetype)initWithPath:(NSString*)aPath encryptionKey:(NSString*)encryptionKey;
 
 /** Returns the Class of 'FMDatabase' subclass, that will be used to instantiate database object.
  
