@@ -9,6 +9,29 @@
 #import <Foundation/Foundation.h>
 
 @class FMDatabase;
+@class FMDatabasePool;
+
+@protocol FMDatabasePoolDelegate <NSObject>
+
+/** Asks the delegate whether database should be added to the pool.
+ 
+ @param pool     The `FMDatabasePool` object.
+ @param database The `FMDatabase` object.
+ 
+ @return `YES` if it should add database to pool; `NO` if not.
+ 
+ */
+- (BOOL)databasePool:(FMDatabasePool*)pool shouldAddDatabaseToPool:(FMDatabase*)database;
+
+/** Tells the delegate that database was added to the pool.
+ 
+ @param pool     The `FMDatabasePool` object.
+ @param database The `FMDatabase` object.
+ 
+ */
+- (void)databasePool:(FMDatabasePool*)pool didAddDatabase:(FMDatabase*)database;
+
+@end
 
 /** Pool of `<FMDatabase>` objects.
 
@@ -36,7 +59,7 @@
     NSMutableArray      *_databaseInPool;
     NSMutableArray      *_databaseOutPool;
     
-    __unsafe_unretained id _delegate;
+    __unsafe_unretained id<FMDatabasePoolDelegate> _delegate;
     
     NSUInteger          _maximumNumberOfDatabasesToCreate;
     int                 _openFlags;
@@ -49,7 +72,7 @@
 
 /** Delegate object */
 
-@property (atomic, assign) id delegate;
+@property (atomic, assign) id<FMDatabasePoolDelegate> delegate;
 
 /** Maximum number of databases to create */
 
