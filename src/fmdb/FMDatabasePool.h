@@ -216,33 +216,3 @@
 
 @end
 
-
-/** FMDatabasePool delegate category
- 
- This is a category that defines the protocol for the FMDatabasePool delegate
- */
-
-@interface NSObject (FMDatabasePoolDelegate)
-
-/** Asks the delegate whether database should be added to the pool. 
- 
- @param pool     The `FMDatabasePool` object.
- @param database The `FMDatabase` object.
- 
- @return `YES` if it should add database to pool; `NO` if not.
- 
- */
-
-- (BOOL)databasePool:(FMDatabasePool*)pool shouldAddDatabaseToPool:(FMDatabase*)database;
-
-/** Tells the delegate that database was added to the pool.
- 
- @param pool     The `FMDatabasePool` object.
- @param database The `FMDatabase` object.
-
- */
-
-- (void)databasePool:(FMDatabasePool*)pool didAddDatabase:(FMDatabase*)database;
-
-@end
-
